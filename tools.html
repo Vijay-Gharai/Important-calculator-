@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>अति आवश्यक टूल्स ऐप</title>
+    <style>
+        :root {
+            --primary-color: #007BFF; /* A professional blue */
+            --secondary-color: #f4f4f9;
+            --dark-color: #333;
+            --light-color: #fff;
+            --border-color: #ddd;
+            --sidebar-bg: #343a40;
+            --sidebar-text: #f8f9fa;
+            --sidebar-active: #007BFF;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+        }
+
+        #sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 20px 0;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        #sidebar h1 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 1.5em;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #495057;
+        }
+
+        #tool-list { list-style-type: none; padding: 0; margin: 0; }
+        #tool-list li { padding: 15px 20px; cursor: pointer; transition: background-color 0.3s; border-left: 4px solid transparent; }
+        #tool-list li:hover { background-color: #495057; }
+        #tool-list li.active { background-color: var(--sidebar-active); border-left-color: var(--light-color); font-weight: bold; }
+
+        #main-content { flex-grow: 1; padding: 30px; overflow-y: auto; }
+
+        .tool-container {
+            display: none;
+            background-color: var(--light-color);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .tool-container h2 { margin-top: 0; color: var(--primary-color); border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; }
+        input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 1rem; box-sizing: border-box; }
+        button { background-color: var(--primary-color); color: var(--light-color); border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; transition: background-color 0.3s; margin-right: 10px; }
+        button:hover { opacity: 0.9; }
+        .result-box { margin-top: 20px; padding: 15px; background-color: var(--secondary-color); border: 1px solid var(--border-color); border-left: 5px solid var(--primary-color); border-radius: 5px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            #sidebar { width: 100%; height: auto; display: flex; align-items: center; overflow-x: auto; padding: 0; }
+            #sidebar h1 { display: none; }
+            #tool-list { display: flex; width: 100%; }
+            #tool-list li { flex: 1; text-align: center; border-left: none; border-bottom: 4px solid transparent; padding: 15px 5px; }
+            #tool-list li.active { border-left-color: transparent; border-bottom-color: var(--light-color); }
+            #main-content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <h1>आवश्यक टूल्स</h1>
+        <ul id="tool-list">
+            <li onclick="showTool('emi-calculator')" class="active">EMI कैलकुलेटर</li>
+            <li onclick="showTool('gst-calculator')">GST कैलकुलेटर</li>
+            <li onclick="showTool('discount-calculator')">छूट कैलकुलेटर</li>
+            <li onclick="showTool('age-calculator')">आयु कैलकुलेटर</li>
+        </ul>
+    </aside>
+
+    <main id="main-content">
+
+        <!-- Tool 1: EMI Calculator -->
+        <div id="emi-calculator" class="tool-container">
+            <h2>लोन EMI कैलकुलेटर</h2>
+            <div class="form-group"><label for="loan-amount">लोन की राशि (₹):</label><input type="number" id="loan-amount" placeholder="1000000"></div>
+            <div class="form-group"><label for="interest-rate">वार्षिक ब्याज दर (%):</label><input type="number" id="interest-rate" placeholder="8.5"></div>
+            <div class="form-group"><label for="loan-tenure">अवधि (वर्षों में):</label><input type="number" id="loan-tenure" placeholder="20"></div>
+            <button onclick="calculateEMI()">EMI की गणना करें</button>
+            <div id="emi-result" class="result-box" style="display:none;"></div>
+        </div>
+
+        <!-- Tool 2: GST Calculator -->
+        <div id="gst-calculator" class="tool-container">
+            <h2>GST कैलकुलेटर</h2>
+            <div class="form-group"><label for="base-amount">मूल राशि (₹):</label><input type="number" id="base-amount" placeholder="1000"></div>
+            <div class="form-group">
+                <label for="gst-rate">GST दर (%):</label>
+                <select id="gst-rate">
+                    <option value="3">3%</option>
+                    <option value="5">5%</option>
+                    <option value="12">12%</option>
+                    <option value="18" selected>18%</option>
+                    <option value="28">28%</option>
+                </select>
+            </div>
+            <button onclick="calculateGST('add')">GST जोड़ें</button>
+            <button onclick="calculateGST('remove')" style="background-color:#6c757d;">GST हटाएं</button>
+            <div id="gst-result" class="result-box" style="display:none;"></div>
+        </div>
+
+        <!-- Tool 3: Discount Calculator -->
+        <div id="discount-calculator" class="tool-container">
+            <h2>छूट कैलकुलेटर</h2>
+            <div class="form-group"><label for="original-price">मूल मूल्य (₹):</label><input type="number" id="original-price" placeholder="1999"></div>
+            <div class="form-group"><label for="discount-percent">छूट (%):</label><input type="number" id="discount-percent" placeholder="25"></div>
+            <button onclick="calculateDiscount()">गणना करें</button>
+            <div id="discount-result" class="result-box" style="display:none;"></div>
+        </div>
+
+        <!-- Tool 4: Age Calculator -->
+        <div id="age-calculator" class="tool-container">
+            <h2>आयु कैलकुलेटर</h2>
+            <div class="form-group"><label for="birth-date">अपनी जन्मतिथि चुनें:</label><input type="date" id="birth-date"></div>
+            <button onclick="calculateAge()">आयु की गणना करें</button>
+            <div id="age-result" class="result-box" style="display:none;"></div>
+        </div>
+
+    </main>
+
+    <script>
+    // --- Global Logic ---
+    document.addEventListener('DOMContentLoaded', () => showTool('emi-calculator'));
+
+    function showTool(toolId) {
+        document.querySelectorAll('.tool-container').forEach(c => c.style.display = 'none');
+        document.getElementById(toolId).style.display = 'block';
+        document.querySelectorAll('#tool-list li').forEach(li => li.classList.remove('active'));
+        document.querySelector(`#tool-list li[onclick="showTool('${toolId}')"]`).classList.add('active');
+    }
+
+    // --- Tool 1: EMI Calculator ---
+    function calculateEMI() {
+        const p = parseFloat(document.getElementById('loan-amount').value);
+        const r_annual = parseFloat(document.getElementById('interest-rate').value);
+        const t_years = parseFloat(document.getElementById('loan-tenure').value);
+        const resultEl = document.getElementById('emi-result');
+
+        if (isNaN(p) || isNaN(r_annual) || isNaN(t_years) || p <= 0 || r_annual <= 0 || t_years <= 0) {
+            resultEl.innerHTML = 'कृपया सभी फ़ील्ड में मान्य सकारात्मक संख्याएँ दर्ज करें।';
+            resultEl.style.display = 'block'; return;
+        }
+
+        const r = r_annual / 12 / 100;
+        const n = t_years * 12;
+        const emi = p * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+        const totalPayment = emi * n;
+        const totalInterest = totalPayment - p;
+
+        resultEl.innerHTML = `
+            <p><strong>मासिक EMI:</strong> ₹ ${emi.toFixed(2)}</p>
+            <p><strong>कुल ब्याज:</strong> ₹ ${totalInterest.toFixed(2)}</p>
+            <p><strong>कुल भुगतान:</strong> ₹ ${totalPayment.toFixed(2)}</p>
+        `;
+        resultEl.style.display = 'block';
+    }
+
+    // --- Tool 2: GST Calculator ---
+    function calculateGST(action) {
+        const amount = parseFloat(document.getElementById('base-amount').value);
+        const rate = parseFloat(document.getElementById('gst-rate').value);
+        const resultEl = document.getElementById('gst-result');
+
+        if (isNaN(amount) || amount <= 0) {
+            resultEl.innerHTML = 'कृपया एक मान्य राशि दर्ज करें।';
+            resultEl.style.display = 'block'; return;
+        }
+
+        let gstAmount, netPrice, grossPrice;
+        if (action === 'add') {
+            netPrice = amount;
+            gstAmount = netPrice * (rate / 100);
+            grossPrice = netPrice + gstAmount;
+            resultEl.innerHTML = `
+                <p><strong>मूल राशि:</strong> ₹ ${netPrice.toFixed(2)}</p>
+                <p><strong>GST (${rate}%):</strong> + ₹ ${gstAmount.toFixed(2)}</p>
+                <hr><p><strong>कुल राशि:</strong> ₹ ${grossPrice.toFixed(2)}</p>
+            `;
+        } else { // remove
+            grossPrice = amount;
+            netPrice = grossPrice / (1 + (rate / 100));
+            gstAmount = grossPrice - netPrice;
+            resultEl.innerHTML = `
+                <p><strong>कुल राशि:</strong> ₹ ${grossPrice.toFixed(2)}</p>
+                <p><strong>GST (${rate}%):</strong> - ₹ ${gstAmount.toFixed(2)}</p>
+                <hr><p><strong>मूल राशि:</strong> ₹ ${netPrice.toFixed(2)}</p>
+            `;
+        }
+        resultEl.style.display = 'block';
+    }
+
+    // --- Tool 3: Discount Calculator ---
+    function calculateDiscount() {
+        const price = parseFloat(document.getElementById('original-price').value);
+        const discount = parseFloat(document.getElementById('discount-percent').value);
+        const resultEl = document.getElementById('discount-result');
+
+        if (isNaN(price) || isNaN(discount) || price <= 0 || discount < 0) {
+            resultEl.innerHTML = 'कृपया मान्य मूल्य और छूट प्रतिशत दर्ज करें।';
+            resultEl.style.display = 'block'; return;
+        }
+
+        const savings = price * (discount / 100);
+        const finalPrice = price - savings;
+
+        resultEl.innerHTML = `
+            <p><strong>आपकी बचत:</strong> ₹ ${savings.toFixed(2)}</p>
+            <p><strong>छूट के बाद मूल्य:</strong> ₹ ${finalPrice.toFixed(2)}</p>
+        `;
+        resultEl.style.display = 'block';
+    }
+
+    // --- Tool 4: Age Calculator ---
+    function calculateAge() {
+        const birthDateInput = document.getElementById('birth-date').value;
+        const resultEl = document.getElementById('age-result');
+        
+        if (!birthDateInput) {
+            resultEl.innerHTML = 'कृपया अपनी जन्मतिथि चुनें।';
+            resultEl.style.display = 'block'; return;
+        }
+
+        const birthDate = new Date(birthDateInput);
+        const today = new Date();
+
+        if (birthDate > today) {
+            resultEl.innerHTML = 'जन्म की तारीख भविष्य में नहीं हो सकती।';
+            resultEl.style.display = 'block'; return;
+        }
+
+        let ageYears = today.getFullYear() - birthDate.getFullYear();
+        let ageMonths = today.getMonth() - birthDate.getMonth();
+        let ageDays = today.getDate() - birthDate.getDate();
+
+        if (ageDays < 0) {
+            ageMonths--;
+            ageDays += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+        }
+
+        if (ageMonths < 0) {
+            ageYears--;
+            ageMonths += 12;
+        }
+
+        resultEl.innerHTML = `आपकी आयु है: <strong>${ageYears} वर्ष, ${ageMonths} महीने, और ${ageDays} दिन</strong>`;
+        resultEl.style.display = 'block';
+    }
+    </script>
+</body>
+</html>
